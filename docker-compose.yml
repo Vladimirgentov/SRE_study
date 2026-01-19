@@ -1,0 +1,45 @@
+volumes:
+  pg_data:
+  static:
+  media:
+
+services:
+  postgres:
+    image: postgres:13
+    container_name: postgres
+    env_file: .env
+    volumes:
+      - pg_data:/var/lib/postgresql/data
+    restart: always
+
+  backend:
+    build: ./backend
+    container_name: backend
+    env_file: .env
+    depends_on:
+      - postgres
+    volumes:
+      - static:/app/collected_static
+      - media:/app/media
+    restart: always
+
+  frontend:
+    build: ./frontend
+    container_name: frontend
+    volumes:
+      - static:/static
+    command: sh -c "cp -r /app/build/* /static/ && tail -f /dev/null"
+    restart: always
+
+  gateway:
+    build: ./nginx
+    container_name: gateway
+    depends_on:
+      - backend
+      - frontend
+    ports:
+      - "9000:80"
+    volumes:
+      - static:/var/html/static
+      - media:/var/html/media
+    restart: always
