@@ -1,3 +1,5 @@
+version: "3.8"
+
 volumes:
   pg_data:
   static:
@@ -6,34 +8,29 @@ volumes:
 services:
   postgres:
     image: postgres:13
-    container_name: postgres
     env_file: .env
     volumes:
       - pg_data:/var/lib/postgresql/data
     restart: always
 
   backend:
-    build: ./backend
-    container_name: backend
+    image: vladimirgentov/kittygram_backend:latest
     env_file: .env
     depends_on:
       - postgres
     volumes:
-      - static:/app/collected_static
+      - static:/app/static
       - media:/app/media
     restart: always
 
   frontend:
-    build: ./frontend
-    container_name: frontend
+    image: vladimirgentov/kittygram_frontend:latest
     volumes:
       - static:/static
     command: sh -c "cp -r /app/build/* /static/ && tail -f /dev/null"
-    restart: always
 
   gateway:
-    build: ./nginx
-    container_name: gateway
+    image: vladimirgentov/kittygram_gateway:latest
     depends_on:
       - backend
       - frontend
