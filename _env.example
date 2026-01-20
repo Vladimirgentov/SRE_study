@@ -1,8 +1,13 @@
+# --- PostgreSQL ---
 POSTGRES_DB=kittygram
 POSTGRES_USER=kittygram_user
 POSTGRES_PASSWORD=kittygram_password
 DB_HOST=postgres
 DB_PORT=5432
+
+# --- Django ---
 SECRET_KEY=django-insecure-example-secret-key
 DEBUG=False
-ALLOWED_HOSTS=kittygram.gentov.ru localhost 127.0.0.1
+
+# Через запятую (поддерживается также через пробел)
+ALLOWED_HOSTS=kittygram.example.com,localhost,127.0.0.1
