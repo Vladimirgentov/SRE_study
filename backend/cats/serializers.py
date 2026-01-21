@@ -7,7 +7,7 @@ import webcolors
 
 import datetime as dt
 
-from .models import Achievement, AchievementCat, Cat
+from .models import Achievement, Cat
 
 
 class Hex2NameColor(serializers.Field):
@@ -71,11 +71,12 @@ class CatSerializer(serializers.ModelSerializer):
             achievements = validated_data.pop('achievements')
             cat = Cat.objects.create(**validated_data)
             for achievement in achievements:
-                current_achievement, status = Achievement.objects.get_or_create(
-                    **achievement)
-                AchievementCat.objects.create(
-                    achievement=current_achievement, cat=cat
+                current_achievement, status = (
+                    Achievement.objects.get_or_create(
+                        **achievement
+                    )
                 )
+                cat.achievements.add(current_achievement)
             return cat
 
     def update(self, instance, validated_data):
@@ -89,9 +90,11 @@ class CatSerializer(serializers.ModelSerializer):
             achievements_data = validated_data.pop('achievements')
             lst = []
             for achievement in achievements_data:
-                current_achievement, status = Achievement.objects.get_or_create(
-                    **achievement)
-                lst.append(current_achievement)
+                current_achievement, status = (
+                    Achievement.objects.get_or_create(
+                        **achievement
+                    )
+                )
             instance.achievements.set(lst)
 
         instance.save()
